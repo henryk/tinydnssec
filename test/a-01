@@ -1,0 +1,16 @@
+<SIZE> bytes, 1+2+3+9 records, response, authoritative, noerror
+query: MX x.w.example
+answer: x.w.example 3600 MX 1 xx.example
+answer: x.w.example 3600 RRSIG MX 7 3 3600 <TIME> <TIME> 44495 example <SIG>
+authority: example 3600 NS ns1.example
+authority: example 3600 NS ns2.example
+authority: example 3600 RRSIG NS 7 1 3600 <TIME> <TIME> 44495 example <SIG>
+additional: . 0 OPT 512 0 0 8000
+additional: xx.example 3600 A 192.0.2.10
+additional: xx.example 3600 AAAA 2001:db8::f00:baaa
+additional: xx.example 3600 RRSIG A 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: xx.example 3600 RRSIG AAAA 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: ns1.example 3600 A 192.0.2.1
+additional: ns1.example 3600 RRSIG A 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: ns2.example 3600 A 192.0.2.2
+additional: ns2.example 3600 RRSIG A 7 2 3600 <TIME> <TIME> 44495 example <SIG>

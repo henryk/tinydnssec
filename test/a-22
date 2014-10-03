@@ -1,0 +1,7 @@
+<SIZE> bytes, 1+2+2+1 records, response, authoritative, noerror
+query: A simple.example.xx
+answer: simple.example.xx 86400 CNAME ns1.example.xx
+answer: ns1.example.xx 259200 A 192.0.2.1
+authority: example.xx 259200 NS ns1.example.xx
+authority: example.xx 259200 NS ns2.example.xx
+additional: ns2.example.xx 259200 A 192.0.2.2

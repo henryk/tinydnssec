@@ -1,0 +1,132 @@
+DNSSEC for tinydns
+==================
+
+This project adds DNSSEC support to D. J. Bernstein's tinydns (see
+http://cr.yp.to/djbdns.html ).
+
+It consists of two parts (mostly):
+
+- tinydns-sign, a perl script for augmenting a tinydns-data file with
+  DNSSEC-related RRs, and
+
+- a patch to tinydns / axfrdns to make them produce DNSSEC-authenticated
+  answers.
+
+The patch tries to preserve the behaviour of tinydns/axfrdns wrt non-DNSSEC
+queries, with these noteworthy exceptions:
+
+- The interpretation of wildcard records now matches the description in
+  RFC-1034 section 4.3.3. Specifically, if there's a wildcard *.x and a
+  record for a.x, then a query for y.a.x will *not* be answered using the
+  wildcard (for a label 'a' and series of labels 'x' and 'y').
+  This change is required for signed domains, because authentication of
+  negative responses requires a common understanding between client and
+  server about the meaning of wildcards.
+
+- EDNS0 in queries will be honoured also for non-DNSSEC queries, i. e.
+  tinydns may produce answers exceeding 512 bytes. (There is a hard
+  limit of 4000 bytes, though.)
+  This *can* lead to problems on IPv6 networks.
+
+- TXT records are split into character-strings of 255 bytes, not 127.
+  This is not really a DNSSEC-related change, but this is kind of a FAQ [5] and
+  tinydns-data and tinydns-sign must agree on how this is handled or the
+  generated RRSIG won't match.
+
+- The patch includes a fix for the broken CNAME handling in tinydns. See [6]
+  for a description of the problem. The patch referenced by that description
+  conflicts with fefe's IPv6 patch and requires further modifications for
+  DNSSEC, so I decided to roll my own solution.
+
+Be careful with publishing signed zones as a secondary nameserver: the
+modified tinydns/axfrdns require certain helper RRs in the database to
+simplify locating NSEC3 records. Without these helpers, tinydns cannot
+generate valid negative response nor valid wildcard responses.
+
+Axfrdns *will* publish these helper RRs, other primaries will most
+likely *not*.
+
+
+HOWTO
+-----
+
+0. Install tinydns-sign and patched tinydns/axfrdns.
+
+1. Generate key(s). See the tinydns-sign manpage for details.
+
+   It is common practice to have a "Key signing key" (KSK, with flags=257)
+   and a "Zone signing key" (ZSK, with flags=256). The KSK is used only for
+   signing the DNSKEY RRs, the ZSK is used for signing the rest. The KSK is
+   more difficult to change because it is used in the delegating domain's
+   referral, therefore it usually has more bits. The ZSK is used for signing
+   all the other records, and is therefore usually shorter and changed more
+   frequently.
+
+   You should keep the keys in a safe place (outside the tinydns ROOT), e. g.
+   in a directory "keys" located above the ROOT.
+
+2. Add the K pseudo records from the key files to your tinydns-data file.
+   Also, add a P pseudo record for each signed zone.
+
+3. Adapt the Makefile to pipe your data file through tinydns-sign before
+   before running tinydns-data, e. g.
+
+data.cdb: data update
+	tinydns-sign ../keys/* <data >data.tmp
+	mv data.tmp data
+	tinydns-data
+	rm -f update
+
+update:
+	touch update
+
+4. Run make.
+
+5. Set up a cronjob to periodically re-sign your data file before the
+   signatures expire.
+
+6. TEST! For example:
+
+   * Use dig axfr <domain> @<server> and validate the result with a dnssec zone
+     validator, like yazvs [1].
+
+   * Use an online DNS or DNSSEC test tool. See [2] for a list.
+
+7. Read RFC-4641 [3] to get a feeling for what is explicitly not called
+   "Best Current Practices". :-)
+
+   In particular, think about key lifetime and how to do a key rollover.
+
+8. Sacrifice a few small animals to a deity of your choice. Get yourself a
+   drink for really tough guys, like prune juice [4].
+
+9. If you feel brave, contact your upstream delegator to publish DS records
+   for your zone.
+
+   Note that this is a really good way to cut yourself off from the rest of the
+   internet. You've been warned, so don't blame me.
+
+LICENSE
+-------
+
+(C) 2012 Peter Conrad <conrad@quisquis.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 3 as
+published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+[1] http://yazvs.verisignlabs.com/ .
+[2] http://www.bortzmeyer.org/tests-dns.html
+[3] http://tools.ietf.org/html/rfc4641
+[4] http://en.memory-alpha.org/wiki/Prune_juice
+[5] http://marc.info/?l=djbdns&m=120848817816960&w=2
+[6] http://homepage.ntlworld.com/jonathan.deboynepollard/FGA/djbdns-problems.html#tinydns-alias-chain-truncation

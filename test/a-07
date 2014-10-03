@@ -1,0 +1,18 @@
+<SIZE> bytes, 1+2+5+9 records, response, authoritative, noerror
+query: MX a.z.w.example
+answer: a.z.w.example 3600 MX 1 ai.example
+answer: a.z.w.example 3600 RRSIG MX 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+authority: q04jkcevqvmu85r014c7dkba38o0ji5r.example 3600 NSEC3 1 0 12 AABBCCDD r53bq7cc2uvmubfu5ocmm6pers9tk9en A RRSIG
+authority: q04jkcevqvmu85r014c7dkba38o0ji5r.example 3600 RRSIG NSEC3 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+authority: example 3600 NS ns1.example
+authority: example 3600 NS ns2.example
+authority: example 3600 RRSIG NS 7 1 3600 <TIME> <TIME> 44495 example <SIG>
+additional: . 0 OPT 512 0 0 8000
+additional: ai.example 3600 A 192.0.2.9
+additional: ai.example 3600 AAAA 2001:db8::f00:baa9
+additional: ai.example 3600 RRSIG A 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: ai.example 3600 RRSIG AAAA 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: ns1.example 3600 A 192.0.2.1
+additional: ns1.example 3600 RRSIG A 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: ns2.example 3600 A 192.0.2.2
+additional: ns2.example 3600 RRSIG A 7 2 3600 <TIME> <TIME> 44495 example <SIG>

@@ -1,0 +1,10 @@
+<SIZE> bytes, 1+1+2+5 records, response, authoritative, noerror
+query: MX wc.w.unsigned.xx
+answer: wc.w.unsigned.xx 3600 MX 1 aaaa.unsigned.xx
+authority: unsigned.xx 259200 NS a.ns.unsigned.xx
+authority: unsigned.xx 259200 NS b.ns.unsigned.xx
+additional: . 0 OPT 512 0 0 8000
+additional: aaaa.unsigned.xx 86400 A 10.11.12.13
+additional: aaaa.unsigned.xx 86400 AAAA 2002:a0b:c0d::1
+additional: a.ns.unsigned.xx 259200 A 10.10.10.10
+additional: b.ns.unsigned.xx 259200 A 10.11.11.11

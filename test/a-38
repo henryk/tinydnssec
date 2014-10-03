@@ -1,0 +1,4 @@
+<SIZE> bytes, 1+2+0+0 records, response, noerror
+query: MX another.unsigned.xx
+answer: another.unsigned.xx 86400 CNAME an.example.xx
+answer: an.example.xx 86400 CNAME tripple.xx

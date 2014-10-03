@@ -1,0 +1,6 @@
+<SIZE> bytes, 1+4+0+0 records, response, noerror
+query: MX another.example.xx
+answer: another.example.xx 86400 CNAME an.example.xx
+answer: another.example.xx 86400 RRSIG CNAME 7 3 86400 <TIME> <TIME> 44495 example.xx <SIG>
+answer: an.example.xx 86400 CNAME tripple.xx
+answer: an.example.xx 86400 RRSIG CNAME 7 3 86400 <TIME> <TIME> 44495 example.xx <SIG>

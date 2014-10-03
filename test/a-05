@@ -1,0 +1,7 @@
+<SIZE> bytes, 1+0+4+1 records, response, authoritative, noerror
+query: A y.w.example
+authority: example 3600 SOA ns1.example bugs.x.w.example <TIME> 3600 300 3600000 3600
+authority: example 3600 RRSIG SOA 7 1 3600 <TIME> <TIME> 44495 example <SIG>
+authority: ji6neoaepv8b5o6k4ev33abha8ht9fgc.example 3600 NSEC3 1 0 12 AABBCCDD k8udemvp1j2f7eg6jebps17vp3n8i58h
+authority: ji6neoaepv8b5o6k4ev33abha8ht9fgc.example 3600 RRSIG NSEC3 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: . 0 OPT 512 0 0 8000

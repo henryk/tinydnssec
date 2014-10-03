@@ -1,0 +1,7 @@
+<SIZE> bytes, 1+0+4+1 records, response, authoritative, noerror
+query: DS example
+authority: example 3600 SOA ns1.example bugs.x.w.example <TIME> 3600 300 3600000 3600
+authority: example 3600 RRSIG SOA 7 1 3600 <TIME> <TIME> 44495 example <SIG>
+authority: 0p9mhaveqvm6t7vbl5lop2u3t2rp3tom.example 3600 NSEC3 1 0 12 AABBCCDD 2t7b4g4vsa5smi47k61mv5bv1a22bojr NS SOA MX RRSIG DNSKEY NSEC3PARAM
+authority: 0p9mhaveqvm6t7vbl5lop2u3t2rp3tom.example 3600 RRSIG NSEC3 7 2 3600 <TIME> <TIME> 44495 example <SIG>
+additional: . 0 OPT 512 0 0 8000

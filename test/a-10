@@ -1,0 +1,9 @@
+<SIZE> bytes, 1+1+2+4 records, response, authoritative, noerror
+query: MX x.w.example
+answer: x.w.example 3600 MX 1 xx.example
+authority: example 3600 NS ns1.example
+authority: example 3600 NS ns2.example
+additional: xx.example 3600 A 192.0.2.10
+additional: xx.example 3600 AAAA 2001:db8::f00:baaa
+additional: ns1.example 3600 A 192.0.2.1
+additional: ns2.example 3600 A 192.0.2.2

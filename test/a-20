@@ -1,0 +1,4 @@
+<SIZE> bytes, 1+1+1+0 records, response, authoritative, noerror
+query: MX simple.example.xx
+answer: simple.example.xx 86400 CNAME ns1.example.xx
+authority: example.xx 2500 SOA ns1.example.xx bugs.x.w.example.xx <TIME> 3600 300 3600000 3600

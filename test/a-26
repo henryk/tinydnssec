@@ -1,0 +1,9 @@
+<SIZE> bytes, 1+2+2+3 records, response, noerror
+query: MX sub.example.xx
+answer: sub.example.xx 86400 CNAME ns1.a.example.xx
+answer: sub.example.xx 86400 RRSIG CNAME 7 3 86400 <TIME> <TIME> 44495 example.xx <SIG>
+authority: a.example.xx 259200 NS ns1.a.example.xx
+authority: a.example.xx 259200 NS ns2.a.example.xx
+additional: . 0 OPT 512 0 0 8000
+additional: ns1.a.example.xx 259200 A 192.0.2.5
+additional: ns2.a.example.xx 259200 A 192.0.2.6

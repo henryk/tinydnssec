@@ -1,0 +1,9 @@
+<SIZE> bytes, 1+2+4+1 records, response, authoritative, noerror
+query: MX simple.example.xx
+answer: simple.example.xx 86400 CNAME ns1.example.xx
+answer: simple.example.xx 86400 RRSIG CNAME 7 3 86400 <TIME> <TIME> 44495 example.xx <SIG>
+authority: example.xx 2500 SOA ns1.example.xx bugs.x.w.example.xx <TIME> 3600 300 3600000 3600
+authority: example.xx 2500 RRSIG SOA 7 2 2500 <TIME> <TIME> 44495 example.xx <SIG>
+authority: tmd276tdvbbhrhslmaahlbtn3jvn0pru.example.xx 86400 NSEC3 1 0 12 AABBCCDD ubt957071tgo6dp02qb9j6dp2go2243q A RRSIG
+authority: tmd276tdvbbhrhslmaahlbtn3jvn0pru.example.xx 86400 RRSIG NSEC3 7 3 86400 <TIME> <TIME> 44495 example.xx <SIG>
+additional: . 0 OPT 512 0 0 8000

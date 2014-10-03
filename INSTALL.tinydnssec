@@ -1,0 +1,45 @@
+Installation of the tinydnssec patch
+====================================
+
+Requirements
+------------
+
+This patch is *not* against stock djbdns. Here's the minimal set of patches
+to install before the tinydnssec patch applies:
+
+1. http://www.fefe.de/dns/djbdns-1.05-test25.diff.bz2
+   Unfortunately, fefe refuses to name a license for this patch, which means
+   that I cannot redistribute it.
+
+2. My own fixes to the Makefile (IPv6-related): djbdns-ipv6-make.patch
+
+Build
+-----
+
+1. Download and unpack the original djbdns sources from
+   http://cr.yp.to/djbdns/install.html .
+2. Download and apply the patches listed above.
+3. Download and unpack http://tinydnssec.org/tinydnssec-1.05-1.tar.gz in
+   the top-level source directory.
+4. Apply djbdns-1.05-dnssec.patch.
+5. Install as per usual instructions (see http://cr.yp.to/djbdns/install.html ).
+6. Optional: run tests (see below).
+7. Install djbdns as per original instructions, or whatever your preferred
+   method is.
+8. Install tinydns-sign.pl in your preferred location for system 
+   executables, like e. g. /usr/sbin .
+9. Optional: create a manpage for tinydns-sign using e. g.
+     pod2man -s 8 -c '' "tinydns-sign.pl" >tinydns-sign.8
+   then install it in your preferred location for system manpages.
+
+
+Test
+----
+
+run-tests.sh will sign test/data using keys from test/example*, then issue
+some queries using tinydns-get, i. e. without any networking involved.
+
+As root, start tinydns / axfrdns on a local address (127.0.0.3), then execute
+SERVER=127.0.0.3 run-tests.sh -t -u
+to test the same queries via tcp and udp.
+

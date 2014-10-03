@@ -1,0 +1,7 @@
+<SIZE> bytes, 1+1+2+2 records, response, noerror
+query: MX sub.example.xx
+answer: sub.example.xx 86400 CNAME ns1.a.example.xx
+authority: a.example.xx 259200 NS ns1.a.example.xx
+authority: a.example.xx 259200 NS ns2.a.example.xx
+additional: ns1.a.example.xx 259200 A 192.0.2.5
+additional: ns2.a.example.xx 259200 A 192.0.2.6

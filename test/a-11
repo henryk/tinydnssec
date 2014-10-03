@@ -1,0 +1,6 @@
+<SIZE> bytes, 1+0+2+2 records, response, noerror
+query: MX mc.a.example
+authority: a.example 3600 NS ns1.a.example
+authority: a.example 3600 NS ns2.a.example
+additional: ns1.a.example 3600 A 192.0.2.5
+additional: ns2.a.example 3600 A 192.0.2.6

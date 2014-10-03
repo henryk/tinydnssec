@@ -1,0 +1,3 @@
+<SIZE> bytes, 1+0+1+0 records, response, authoritative, noerror
+query: DS example
+authority: example 3600 SOA ns1.example bugs.x.w.example <TIME> 3600 300 3600000 3600

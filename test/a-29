@@ -1,0 +1,12 @@
+<SIZE> bytes, 1+2+3+5 records, response, authoritative, noerror
+query: CNAME an.example.xx
+answer: an.example.xx 86400 CNAME tripple.xx
+answer: an.example.xx 86400 RRSIG CNAME 7 3 86400 <TIME> <TIME> 44495 example.xx <SIG>
+authority: example.xx 259200 NS ns1.example.xx
+authority: example.xx 259200 NS ns2.example.xx
+authority: example.xx 259200 RRSIG NS 7 2 259200 <TIME> <TIME> 44495 example.xx <SIG>
+additional: . 0 OPT 512 0 0 8000
+additional: ns1.example.xx 259200 A 192.0.2.1
+additional: ns1.example.xx 259200 RRSIG A 7 3 259200 <TIME> <TIME> 44495 example.xx <SIG>
+additional: ns2.example.xx 259200 A 192.0.2.2
+additional: ns2.example.xx 259200 RRSIG A 7 3 259200 <TIME> <TIME> 44495 example.xx <SIG>

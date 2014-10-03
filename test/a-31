@@ -1,0 +1,4 @@
+<SIZE> bytes, 1+0+1+1 records, response, authoritative, noerror
+query: AAAA a.ns.unsigned.xx
+authority: unsigned.xx 2560 SOA a.ns.unsigned.xx hostmaster.unsigned.xx <TIME> 16384 2048 1048576 2560
+additional: . 0 OPT 512 0 0 8000

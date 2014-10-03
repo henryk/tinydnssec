@@ -1,0 +1,13 @@
+
+* Make hardcoded limit for EDNS0 response size configurable (environment).
+
+* Add support for locations + timestamps to tinydns-sign (basically, treat
+  them as separate zones, with timestamp-dependend SOA serials).
+
+* Add support for ((semi-)automatic) ZSK rollover using pre-publish method.
+
+* Refactor tinydns-sign:
+  - separate generation of helper records
+  - put some functionality into modules
+  - make (better) use of existing Net::DNS modules
+
