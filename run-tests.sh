@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # (C) 2012 Peter Conrad <conrad@quisquis.de>
 
