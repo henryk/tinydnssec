@@ -72,11 +72,15 @@ static struct udpclient {
 } u[MAXUDP];
 int uactive = 0;
 
+#define MAXSOA 20
+int soaactive = 0;
+
 void u_drop(int j)
 {
   if (!u[j].active) return;
   log_querydrop(&u[j].active);
   u[j].active = 0; --uactive;
+  if (byte_equal(u[j].q.type,2,DNS_T_SOA)) --soaactive;
 }
 
 void u_respond(int j)
@@ -87,6 +91,7 @@ void u_respond(int j)
   socket_send6(udp53,response,response_len,u[j].ip,u[j].port,u[j].scope_id);
   log_querydone(&u[j].active,response_len);
   u[j].active = 0; --uactive;
+  if (byte_equal(u[j].q.type,2,DNS_T_SOA)) --soaactive;
 }
 
 void u_new(void)
@@ -125,6 +130,16 @@ void u_new(void)
 
   x->active = ++numqueries; ++uactive;
   log_query(&x->active,x->ip,x->port,x->id,q,qtype);
+
+  if (byte_equal(qtype,2,DNS_T_SOA)) {
+    if (soaactive >= MAXSOA) {
+      log_querydropmaxsoa(&x->active);
+      x->active = 0; --uactive;
+      return;
+    }
+    ++soaactive;
+  }
+
   switch(query_start(&x->q,q,qtype,qclass,myipoutgoing,interface)) {
     case -1:
       u_drop(j);

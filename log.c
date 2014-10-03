@@ -118,6 +118,12 @@ void log_querydrop(uint64 *qnum)
   line();
 }
 
+void log_querydropmaxsoa(uint64 *qnum)
+{
+  string("drop "); number(*qnum); space(); string("maxsoa");
+  line();
+}
+
 void log_tcpopen(const char client[16],unsigned int port)
 {
   string("tcpopen ");
