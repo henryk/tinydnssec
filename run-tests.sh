@@ -21,7 +21,7 @@ for i in test/q-*; do
     id="${i#test/q}"
     echo -n "$i ... "
     read sec type name <"$i"
-    ./tinydns-get "$sec" "$type" $name | tail +2 >test/"o$id"
+    ./tinydns-get "$sec" "$type" $name | tail -n +2 >test/"o$id"
     sed -s 's/\b[0-9]\{10\}\b/<TIME>/g;/00 RRSIG /s/[^ ]*$/<SIG>/;s/^[0-9]\{1,\}/<SIZE>/' <test/"o$id" >test/"t$id"
     if diff "test/t$id" "test/a$id" >/dev/null; then
 	echo "OK"
