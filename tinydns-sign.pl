@@ -16,7 +16,7 @@
 
 use strict;
 use Fcntl;
-use Digest::SHA1 qw(sha1 sha1_hex);
+use Digest::SHA qw(sha1 sha1_hex);
 use Crypt::OpenSSL::RSA;
 use MIME::Base64;
 
