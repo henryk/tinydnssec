@@ -863,7 +863,7 @@ compile socket_accept.c byte.h socket.h uint16.h
 	./compile socket_accept.c
 
 socket_accept6.o: \
-compile socket_accept6.c byte.h socket.h uint16.h
+compile socket_accept6.c byte.h socket.h uint16.h haveip6.h
 	./compile socket_accept6.c
 
 socket_bind.o: \
@@ -879,7 +879,7 @@ compile socket_conn.c byte.h socket.h uint16.h
 	./compile socket_conn.c
 
 socket_connect6.o: \
-compile socket_connect6.c byte.h socket.h uint16.h uint32.h
+compile socket_connect6.c byte.h socket.h uint16.h uint32.h haveip6.h
 	./compile socket_connect6.c
 
 socket_listen.o: \
