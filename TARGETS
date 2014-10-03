@@ -240,3 +240,8 @@ scan_xlong.o
 socket_accept6.o
 socket_connect6.o
 socket_tcp6.o
+base32hex.o
+sha1.o
+base32hex.o
+printtype.o
+edns0.o

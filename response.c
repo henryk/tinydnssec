@@ -5,6 +5,8 @@
 
 char response[65535];
 unsigned int response_len = 0; /* <= 65535 */
+unsigned int max_response_len = 0; /* <= 65535 */
+unsigned int do_dnssec = 0;
 static unsigned int tctarget;
 
 #define NAMES 100

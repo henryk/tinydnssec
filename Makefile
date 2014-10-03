@@ -53,10 +53,10 @@ iopause.h taia.h tai.h uint64.h taia.h
 axfrdns: \
 load axfrdns.o iopause.o droproot.o tdlookup.o response.o qlog.o \
 prot.o timeoutread.o timeoutwrite.o clientloc.o dns.a libtai.a alloc.a env.a \
-cdb.a buffer.a unix.a byte.a
+cdb.a buffer.a unix.a byte.a sha1.o base32hex.o edns0.o
 	./load axfrdns iopause.o droproot.o tdlookup.o response.o \
 	qlog.o prot.o timeoutread.o timeoutwrite.o clientloc.o dns.a libtai.a \
-	alloc.a env.a cdb.a buffer.a unix.a byte.a 
+	alloc.a env.a cdb.a buffer.a unix.a byte.a  sha1.o base32hex.o edns0.o
 
 axfrdns-conf: \
 load axfrdns-conf.o generic-conf.o auto_home.o buffer.a unix.a byte.a
@@ -75,6 +75,10 @@ cdb.h uint32.h stralloc.h gen_alloc.h strerr.h str.h byte.h case.h \
 dns.h stralloc.h iopause.h taia.h tai.h taia.h scan.h qlog.h uint16.h \
 response.h uint32.h clientloc.h
 	./compile axfrdns.c
+
+base32hex.o: \
+compile base32hex.c base32hex.h
+	./compile base32hex.c
 
 buffer.a: \
 makelib buffer.o buffer_1.o buffer_2.o buffer_copy.o buffer_get.o \
@@ -454,10 +458,11 @@ gen_alloc.h iopause.h taia.h tai.h uint64.h taia.h ip6.h
 
 dnsq: \
 load dnsq.o iopause.o printrecord.o printpacket.o parsetype.o dns.a \
-env.a libtai.a buffer.a alloc.a unix.a byte.a socket.lib
+env.a libtai.a buffer.a alloc.a unix.a byte.a socket.lib printtype.o \
+base32hex.o
 	./load dnsq iopause.o printrecord.o printpacket.o \
 	parsetype.o dns.a env.a libtai.a buffer.a alloc.a unix.a \
-	byte.a  `cat socket.lib`
+	byte.a  `cat socket.lib` printtype.o base32hex.o
 
 dnsq.o: \
 compile dnsq.c uint16.h strerr.h buffer.h scan.h str.h byte.h error.h \
@@ -467,10 +472,11 @@ gen_alloc.h parsetype.h dns.h stralloc.h iopause.h taia.h
 
 dnsqr: \
 load dnsqr.o iopause.o printrecord.o printpacket.o parsetype.o dns.a \
-env.a libtai.a buffer.a alloc.a unix.a byte.a socket.lib
+env.a libtai.a buffer.a alloc.a unix.a byte.a socket.lib printtype.o \
+base32hex.o
 	./load dnsqr iopause.o printrecord.o printpacket.o \
 	parsetype.o dns.a env.a libtai.a buffer.a alloc.a unix.a \
-	byte.a  `cat socket.lib`
+	byte.a  `cat socket.lib` printtype.o base32hex.o
 
 dnsqr.o: \
 compile dnsqr.c uint16.h strerr.h buffer.h scan.h str.h byte.h \
@@ -480,10 +486,10 @@ gen_alloc.h parsetype.h dns.h stralloc.h iopause.h taia.h
 
 dnstrace: \
 load dnstrace.o dd.o iopause.o printrecord.o parsetype.o dns.a env.a \
-libtai.a alloc.a buffer.a unix.a byte.a socket.lib
+libtai.a alloc.a buffer.a unix.a byte.a socket.lib printtype.o base32hex.o
 	./load dnstrace dd.o iopause.o printrecord.o parsetype.o \
 	dns.a env.a libtai.a alloc.a buffer.a unix.a byte.a  `cat \
-	socket.lib`
+	socket.lib` printtype.o base32hex.o
 
 dnstrace.o: \
 compile dnstrace.c uint16.h uint32.h fmt.h str.h byte.h ip4.h \
@@ -513,6 +519,10 @@ gen_alloc.h iopause.h taia.h tai.h uint64.h taia.h
 droproot.o: \
 compile droproot.c env.h scan.h prot.h strerr.h
 	./compile droproot.c
+
+edns0.o: \
+compile edns0.c edns0.h uint16.h dns.h response.h iopause.h taia.h uint64.h
+	./compile edns0.c
 
 env.a: \
 makelib env.o
@@ -689,10 +699,10 @@ iopause.h taia.h tai.h uint64.h taia.h uint16.h parsetype.h
 
 pickdns: \
 load pickdns.o server.o iopause.o response.o droproot.o qlog.o prot.o dns.a \
-env.a libtai.a cdb.a alloc.a buffer.a unix.a byte.a socket.lib
+env.a libtai.a cdb.a alloc.a buffer.a unix.a byte.a socket.lib edns0.o
 	./load pickdns server.o iopause.o response.o droproot.o qlog.o \
 	prot.o dns.a env.a libtai.a cdb.a alloc.a buffer.a unix.a \
-	byte.a  `cat socket.lib`
+	byte.a  `cat socket.lib` edns0.o
 
 pickdns-conf: \
 load pickdns-conf.o generic-conf.o auto_home.o buffer.a unix.a byte.a
@@ -725,14 +735,18 @@ response.h uint32.h
 printpacket.o: \
 compile printpacket.c uint16.h uint32.h error.h byte.h dns.h \
 stralloc.h gen_alloc.h iopause.h taia.h tai.h uint64.h taia.h \
-printrecord.h stralloc.h printpacket.h stralloc.h
+printrecord.h stralloc.h printpacket.h stralloc.h printtype.h
 	./compile printpacket.c
 
 printrecord.o: \
 compile printrecord.c uint16.h uint32.h error.h byte.h dns.h \
 stralloc.h gen_alloc.h iopause.h taia.h tai.h uint64.h taia.h \
-printrecord.h stralloc.h
+printrecord.h stralloc.h printtype.h
 	./compile printrecord.c
+
+printtype.o: \
+compile printtype.c printtype.h dns.h stralloc.h byte.h uint16.h iopause.h taia.h uint64.h
+	./compile printtype.c
 
 prog: \
 dnscache-conf dnscache walldns-conf walldns rbldns-conf rbldns \
@@ -767,10 +781,10 @@ gen_alloc.h iopause.h taia.h tai.h uint64.h taia.h
 
 rbldns: \
 load rbldns.o server.o iopause.o response.o dd.o droproot.o qlog.o prot.o dns.a \
-env.a libtai.a cdb.a alloc.a buffer.a unix.a byte.a socket.lib
+env.a libtai.a cdb.a alloc.a buffer.a unix.a byte.a socket.lib edns0.o
 	./load rbldns server.o iopause.o response.o dd.o droproot.o qlog.o \
 	prot.o dns.a env.a libtai.a cdb.a alloc.a buffer.a unix.a \
-	byte.a  `cat socket.lib`
+	byte.a  `cat socket.lib` edns0.o
 
 rbldns-conf: \
 load rbldns-conf.o generic-conf.o auto_home.o buffer.a unix.a byte.a
@@ -840,7 +854,7 @@ server.o: \
 compile server.c byte.h case.h env.h buffer.h strerr.h ip4.h uint16.h \
 ndelay.h socket.h uint16.h droproot.h qlog.h uint16.h response.h \
 uint32.h dns.h stralloc.h gen_alloc.h iopause.h taia.h tai.h uint64.h \
-taia.h iopause.h alloc.h str.h
+taia.h iopause.h alloc.h str.h edns0.h
 	./compile server.c
 
 setup: \
@@ -930,6 +944,10 @@ haven2i.h: \
 tryn2i.c choose compile load socket.lib haven2i.h1 haven2i.h2
 	cp /dev/null haven2i.h
 	./choose cL tryn2i haven2i.h1 haven2i.h2 socket > haven2i.h
+
+sha1.o: \
+compile sha1.c sha1.h
+	./compile sha1.c
 
 str_chr.o: \
 compile str_chr.c str.h
@@ -1072,7 +1090,7 @@ compile taia_uint.c taia.h tai.h uint64.h
 tdlookup.o: \
 compile tdlookup.c uint16.h open.h tai.h uint64.h cdb.h uint32.h \
 byte.h case.h dns.h stralloc.h gen_alloc.h iopause.h taia.h tai.h \
-taia.h seek.h response.h uint32.h ip6.h clientloc.h
+taia.h seek.h response.h uint32.h ip6.h clientloc.h sha1.h base32hex.h
 	./compile tdlookup.c
 
 timeoutread.o: \
@@ -1088,10 +1106,10 @@ timeoutwrite.h
 tinydns: \
 load tinydns.o server.o iopause.o droproot.o tdlookup.o response.o qlog.o \
 prot.o clientloc.o dns.a libtai.a env.a cdb.a alloc.a buffer.a unix.a byte.a \
-socket.lib
+socket.lib sha1.o base32hex.o edns0.o
 	./load tinydns server.o iopause.o droproot.o tdlookup.o response.o \
 	qlog.o prot.o clientloc.o dns.a libtai.a env.a cdb.a alloc.a buffer.a \
-	unix.a byte.a  `cat socket.lib`
+	unix.a byte.a  `cat socket.lib` sha1.o base32hex.o edns0.o
 
 tinydns-conf: \
 load tinydns-conf.o generic-conf.o auto_home.o buffer.a unix.a byte.a
@@ -1126,11 +1144,12 @@ dns.h stralloc.h iopause.h taia.h tai.h uint64.h taia.h
 	./compile tinydns-edit.c
 
 tinydns-get: \
-load tinydns-get.o tdlookup.o response.o printpacket.o printrecord.o \
-parsetype.o clientloc.o dns.a libtai.a cdb.a buffer.a alloc.a unix.a byte.a
+load tinydns-get.o tdlookup.o sha1.o response.o printpacket.o printrecord.o \
+parsetype.o clientloc.o dns.a libtai.a cdb.a buffer.a alloc.a unix.a byte.a \
+base32hex.o printtype.o
 	./load tinydns-get tdlookup.o response.o printpacket.o \
 	printrecord.o parsetype.o clientloc.o dns.a libtai.a cdb.a buffer.a \
-	alloc.a unix.a byte.a 
+	alloc.a unix.a byte.a  sha1.o base32hex.o printtype.o
 
 tinydns-get.o: \
 compile tinydns-get.c str.h byte.h scan.h exit.h stralloc.h \
@@ -1198,10 +1217,10 @@ compile utime.c scan.h exit.h
 
 walldns: \
 load walldns.o server.o iopause.o response.o droproot.o qlog.o prot.o dd.o \
-dns.a env.a cdb.a alloc.a buffer.a unix.a byte.a socket.lib
+dns.a env.a cdb.a alloc.a buffer.a unix.a byte.a socket.lib edns0.o
 	./load walldns server.o iopause.o response.o droproot.o qlog.o \
 	prot.o dd.o dns.a libtai.a env.a cdb.a alloc.a buffer.a unix.a \
-	byte.a  `cat socket.lib`
+	byte.a  `cat socket.lib` edns0.o
 
 walldns-conf: \
 load walldns-conf.o generic-conf.o auto_home.o buffer.a unix.a byte.a
@@ -1227,4 +1246,4 @@ trysa6.c choose compile sockaddr_in6.h1 sockaddr_in6.h2 haveip6.h
 	./choose c trysa6 sockaddr_in6.h1 sockaddr_in6.h2 > sockaddr_in6.h
 
 clean:
-	rm -f `cat TARGETS`
+	rm -f `cat TARGETS` data data.cdb test/[ot]*

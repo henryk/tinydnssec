@@ -20,7 +20,7 @@ extern int respond(char *,char *,char *);
 
 void usage(void)
 {
-  strerr_die1x(100,"tinydns-get: usage: tinydns-get type name [ip]");
+  strerr_die1x(100,"tinydns-get: usage: tinydns-get [-s | -S] type name [ip]");
 }
 void oops(void)
 {
@@ -40,6 +40,14 @@ int main(int argc,char **argv)
   if (!*argv) usage();
 
   if (!*++argv) usage();
+
+  max_response_len = 512;
+  if ((*argv)[0] == '-') {
+    if ((*argv)[1] != 's' && (*argv)[1] != 'S' || (*argv)[2]) usage();
+    do_dnssec = 1;
+    max_response_len = (*argv)[1] == 's' ? 1220 : 4000;
+    if (!*++argv) usage();
+  }
   if (!parsetype(*argv,type)) usage();
 
   if (!*++argv) usage();

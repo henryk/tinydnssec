@@ -24,6 +24,8 @@ int parsetype(char *s,char type[2])
   else if (case_equals(s,"key")) byte_copy(type,2,DNS_T_KEY);
   else if (case_equals(s,"aaaa")) byte_copy(type,2,DNS_T_AAAA);
   else if (case_equals(s,"axfr")) byte_copy(type,2,DNS_T_AXFR);
+  else if (case_equals(s,"dnskey")) byte_copy(type,2,DNS_T_DNSKEY);
+  else if (case_equals(s,"ds")) byte_copy(type,2,DNS_T_DS);
   else
     return 0;
 

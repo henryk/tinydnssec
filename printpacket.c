@@ -5,6 +5,7 @@
 #include "dns.h"
 #include "printrecord.h"
 #include "printpacket.h"
+#include "printtype.h"
 
 static char *d;
 
@@ -67,8 +68,7 @@ unsigned int printpacket_cat(stralloc *out,char *buf,unsigned int len)
       X("weird class")
     }
     else {
-      uint16_unpack_big(data,&type);
-      NUM(type)
+      if (!printtype(out,data)) return 0;
       X(" ")
       if (!dns_domain_todot_cat(out,d)) return 0;
     }

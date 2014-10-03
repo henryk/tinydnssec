@@ -1,3 +1,4 @@
+#include "edns0.h"
 #include "byte.h"
 #include "case.h"
 #include "env.h"
@@ -62,6 +63,9 @@ static int doit(void)
 
   if (header[2] & 126) goto NOTIMP;
   if (byte_equal(qtype,2,DNS_T_AXFR)) goto NOTIMP;
+
+  pos = check_edns0(header, buf, len, pos);
+  if (!pos) goto NOQ;
 
   case_lowerb(q,dns_domain_length(q));
   if (!respond(q,qtype,ip)) {
@@ -168,7 +172,7 @@ int main()
 	len = socket_recv6(udp53[i],buf,sizeof buf,ip,&port,&ifid);
 	if (len < 0) continue;
 	if (!doit()) continue;
-	if (response_len > 512) response_tc();
+	if (response_len > max_response_len) response_tc();
 	socket_send6(udp53[i],response,response_len,ip,port,ifid);
 	/* may block for buffer space; if it fails, too bad */
       }

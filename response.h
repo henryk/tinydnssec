@@ -5,6 +5,8 @@
 
 extern char response[];
 extern unsigned int response_len;
+extern unsigned int max_response_len;
+extern unsigned int do_dnssec;
 
 extern int response_query(const char *,const char *,const char *);
 extern void response_nxdomain(void);
