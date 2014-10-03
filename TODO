@@ -1,0 +1,12 @@
+end-to-end nym-based security
+link-level security
+
+try to get the root authorities to set up a secure, usable NS-list system
+have dnscache-conf keep track of copies of dnsroots.global
+incorporate automatic NS-list upgrades
+
+consider dead-server table in dnscache or in kernel
+
+IPv6 lookups
+maybe reverse IPv6 lookups; what a mess
+DNS over IPv6
