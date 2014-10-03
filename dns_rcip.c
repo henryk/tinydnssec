@@ -2,12 +2,13 @@
 #include "openreadclose.h"
 #include "byte.h"
 #include "ip4.h"
+#include "ip6.h"
 #include "env.h"
 #include "dns.h"
 
 static stralloc data = {0};
 
-static int init(char ip[64])
+static int init(char ip[256])
 {
   int i;
   int j;
@@ -20,10 +21,10 @@ static int init(char ip[64])
       if (*x == '.')
 	++x;
       else {
-        i = ip4_scan(x,ip + iplen);
+        i = ip6_scan(x,ip + iplen);
 	if (!i) break;
 	x += i;
-	iplen += 4;
+	iplen += 16;
       }
     }
 
@@ -40,10 +41,8 @@ static int init(char ip[64])
             while ((data.s[i] == ' ') || (data.s[i] == '\t'))
               ++i;
             if (iplen <= 60)
-              if (ip4_scan(data.s + i,ip + iplen)) {
-		if (byte_equal(ip + iplen,4,"\0\0\0\0"))
-		  byte_copy(ip + iplen,4,"\177\0\0\1");
-                iplen += 4;
+              if (ip6_scan(data.s + i,ip + iplen)) {
+                iplen += 16;
 	      }
           }
           i = j + 1;
@@ -52,19 +51,19 @@ static int init(char ip[64])
   }
 
   if (!iplen) {
-    byte_copy(ip,4,"\177\0\0\1");
-    iplen = 4;
+    byte_copy(ip,16,"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1");
+    iplen = 16;
   }
-  byte_zero(ip + iplen,64 - iplen);
+  byte_zero(ip + iplen,256 - iplen);
   return 0;
 }
 
 static int ok = 0;
 static unsigned int uses;
 static struct taia deadline;
-static char ip[64]; /* defined if ok */
+static char ip[256]; /* defined if ok */
 
-int dns_resolvconfip(char s[64])
+int dns_resolvconfip(char s[256])
 {
   struct taia now;
 
@@ -81,6 +80,6 @@ int dns_resolvconfip(char s[64])
   }
 
   --uses;
-  byte_copy(s,64,ip);
+  byte_copy(s,256,ip);
   return 0;
 }

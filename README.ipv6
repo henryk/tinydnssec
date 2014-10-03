@@ -1,0 +1,23 @@
+The patch adds ipv6 transport support for djbdns.  It would work for
+tinydns and dnscache.  It requires IPv4 mapped addresses support enabled
+in the operating system (which is true for Linux and can be enabled for
+the BSDs except OpenBSD).
+
+The log format changes to log the full IPv6 addresses in a non-standard,
+"flat" form, for example 00000000000000000000ffffc7fe1f01 (this is
+analogous to ::ffff:199.254.31.1).
+
+The localization format of dnscache-data was amended to support IPv6.
+Instead of
+
+  %in:192.168
+
+you need to use the above flat form with a prepended s for IPv6.  The
+IPv4 form should still work unchanged.  Note that the "data.cdb" file
+format changes for this and is not compatible.  If you run an unpatched
+tinydns on it, it will not recognize any of the localization data.
+
+dnscache will only try to lookup AAAA records for finding nameservers if
+the A record lookup failed.  So IPv4 is default and stays like that, to
+not slow down DNS lookups by looking up all name servers as IPv6 and
+failing for all of them.

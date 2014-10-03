@@ -29,7 +29,9 @@ void hier()
   c(auto_home,"bin","axfr-get",-1,-1,0755);
 
   c(auto_home,"bin","dnsip",-1,-1,0755);
+  c(auto_home,"bin","dnsip6",-1,-1,0755);
   c(auto_home,"bin","dnsipq",-1,-1,0755);
+  c(auto_home,"bin","dnsip6q",-1,-1,0755);
   c(auto_home,"bin","dnsname",-1,-1,0755);
   c(auto_home,"bin","dnstxt",-1,-1,0755);
   c(auto_home,"bin","dnsmx",-1,-1,0755);

@@ -1,0 +1,21 @@
+#include "haveip6.h"
+#ifdef LIBC_HAS_IP6
+#include <sys/types.h>
+#include <sys/socket.h>
+#define sockaddr_in6 blub
+#include <netinet/in.h>
+#undef sockaddr_in6
+
+struct sockaddr_in6 {
+  sa_family_t     sin6_family;    /* AF_INET6 */
+  unsigned short  sin6_port;      /* transport layer port # */
+  uint32_t        sin6_flowinfo;  /* IPv6 traffic class & flow info */
+  struct in6_addr sin6_addr;      /* IPv6 address */
+  uint32_t        sin6_scope_id;  /* set of interfaces for a scope */
+};
+
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif

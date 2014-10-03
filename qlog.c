@@ -20,15 +20,15 @@ static void octal(unsigned char c)
   put('0' + (c & 7));
 }
 
-void qlog(const char ip[4],uint16 port,const char id[2],const char *q,const char qtype[2],const char *result)
+void qlog(const char ip[16],uint16 port,const char id[2],const char *q,const char qtype[2],const char *result)
 {
   char ch;
   char ch2;
 
-  hex(ip[0]);
-  hex(ip[1]);
-  hex(ip[2]);
-  hex(ip[3]);
+  {
+    int i;
+    for (i=0; i<16; ++i) hex(ip[i]);
+  }
   put(':');
   hex(port >> 8);
   hex(port & 255);

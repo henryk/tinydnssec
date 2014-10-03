@@ -35,7 +35,8 @@ struct dns_transmit {
   struct taia deadline;
   unsigned int pos;
   const char *servers;
-  char localip[4];
+  char localip[16];
+  unsigned int scope_id;
   char qtype[2];
 } ;
 
@@ -43,6 +44,7 @@ extern void dns_random_init(const char *);
 extern unsigned int dns_random(unsigned int);
 
 extern void dns_sortip(char *,unsigned int);
+extern void dns_sortip6(char *,unsigned int);
 
 extern void dns_domain_free(char **);
 extern int dns_domain_copy(char **,const char *);
@@ -68,10 +70,13 @@ extern struct dns_transmit dns_resolve_tx;
 
 extern int dns_ip4_packet(stralloc *,const char *,unsigned int);
 extern int dns_ip4(stralloc *,const stralloc *);
+extern int dns_ip6_packet(stralloc *,char *,unsigned int);
+extern int dns_ip6(stralloc *,stralloc *);
 extern int dns_name_packet(stralloc *,const char *,unsigned int);
 extern void dns_name4_domain(char *,const char *);
 #define DNS_NAME4_DOMAIN 31
 extern int dns_name4(stralloc *,const char *);
+extern int dns_name6(stralloc *,const char *);
 extern int dns_txt_packet(stralloc *,const char *,unsigned int);
 extern int dns_txt(stralloc *,const stralloc *);
 extern int dns_mx_packet(stralloc *,const char *,unsigned int);
@@ -80,5 +85,13 @@ extern int dns_mx(stralloc *,const stralloc *);
 extern int dns_resolvconfrewrite(stralloc *);
 extern int dns_ip4_qualify_rules(stralloc *,stralloc *,const stralloc *,const stralloc *);
 extern int dns_ip4_qualify(stralloc *,stralloc *,const stralloc *);
+extern int dns_ip6_qualify_rules(stralloc *,stralloc *,const stralloc *,const stralloc *);
+extern int dns_ip6_qualify(stralloc *,stralloc *,const stralloc *);
+
+#define DNS_IP6_INT 0
+#define DNS_IP6_ARPA 1
+
+extern int dns_name6_domain(char *,const char *,int);
+#define DNS_NAME6_DOMAIN (4*16+11)
 
 #endif

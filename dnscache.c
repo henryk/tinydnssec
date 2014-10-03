@@ -5,6 +5,7 @@
 #include "strerr.h"
 #include "error.h"
 #include "ip4.h"
+#include "ip6.h"
 #include "uint16.h"
 #include "uint64.h"
 #include "socket.h"
@@ -22,6 +23,10 @@
 #include "log.h"
 #include "okclient.h"
 #include "droproot.h"
+
+long interface;
+
+stralloc ignoreip = {0};
 
 static int packetquery(char *buf,unsigned int len,char **q,char qtype[2],char qclass[2],char id[2])
 {
@@ -46,8 +51,8 @@ static int packetquery(char *buf,unsigned int len,char **q,char qtype[2],char qc
 }
 
 
-static char myipoutgoing[4];
-static char myipincoming[4];
+static char myipoutgoing[16];
+static char myipincoming[16];
 static char buf[1024];
 uint64 numqueries = 0;
 
@@ -60,9 +65,10 @@ static struct udpclient {
   struct taia start;
   uint64 active; /* query number, if active; otherwise 0 */
   iopause_fd *io;
-  char ip[4];
+  char ip[16];
   uint16 port;
   char id[2];
+  uint32 scope_id;
 } u[MAXUDP];
 int uactive = 0;
 
@@ -78,7 +84,7 @@ void u_respond(int j)
   if (!u[j].active) return;
   response_id(u[j].id);
   if (response_len > 512) response_tc();
-  socket_send4(udp53,response,response_len,u[j].ip,u[j].port);
+  socket_send6(udp53,response,response_len,u[j].ip,u[j].port,u[j].scope_id);
   log_querydone(&u[j].active,response_len);
   u[j].active = 0; --uactive;
 }
@@ -109,7 +115,7 @@ void u_new(void)
   x = u + j;
   taia_now(&x->start);
 
-  len = socket_recv4(udp53,buf,sizeof buf,x->ip,&x->port);
+  len = socket_recv6(udp53,buf,sizeof buf,x->ip,&x->port,&x->scope_id);
   if (len == -1) return;
   if (len >= sizeof buf) return;
   if (x->port < 1024) if (x->port != 53) return;
@@ -119,7 +125,7 @@ void u_new(void)
 
   x->active = ++numqueries; ++uactive;
   log_query(&x->active,x->ip,x->port,x->id,q,qtype);
-  switch(query_start(&x->q,q,qtype,qclass,myipoutgoing)) {
+  switch(query_start(&x->q,q,qtype,qclass,myipoutgoing,interface)) {
     case -1:
       u_drop(j);
       return;
@@ -127,7 +133,6 @@ void u_new(void)
       u_respond(j);
   }
 }
-
 
 static int tcp53;
 
@@ -138,7 +143,7 @@ struct tcpclient {
   struct taia timeout;
   uint64 active; /* query number or 1, if active; otherwise 0 */
   iopause_fd *io;
-  char ip[4]; /* send response to this address */
+  char ip[16]; /* send response to this address */
   uint16 port; /* send response to this port */
   char id[2];
   int tcp; /* open TCP socket, if active */
@@ -146,6 +151,7 @@ struct tcpclient {
   char *buf; /* 0, or dynamically allocated of length len */
   unsigned int len;
   unsigned int pos;
+  uint32 scope_id;
 } t[MAXTCP];
 int tactive = 0;
 
@@ -254,7 +260,7 @@ void t_rw(int j)
 
   x->active = ++numqueries;
   log_query(&x->active,x->ip,x->port,x->id,q,qtype);
-  switch(query_start(&x->q,q,qtype,qclass,myipoutgoing)) {
+  switch(query_start(&x->q,q,qtype,qclass,myipoutgoing,interface)) {
     case -1:
       t_drop(j);
       return;
@@ -291,7 +297,7 @@ void t_new(void)
   x = t + j;
   taia_now(&x->start);
 
-  x->tcp = socket_accept4(tcp53,x->ip,&x->port);
+  x->tcp = socket_accept6(tcp53,x->ip,&x->port,&x->scope_id);
   if (x->tcp == -1) return;
   if (x->port < 1024) if (x->port != 53) { close(x->tcp); return; }
   if (!okclient(x->ip)) { close(x->tcp); return; }
@@ -389,24 +395,36 @@ char seed[128];
 int main()
 {
   char *x;
+  unsigned int i, j, k;
   unsigned long cachesize;
+  static stralloc sa = {0};
+
+  x = env_get("INTERFACE");
+  if (x) scan_ulong(x,&interface);
 
   x = env_get("IP");
   if (!x)
     strerr_die2x(111,FATAL,"$IP not set");
-  if (!ip4_scan(x,myipincoming))
+  if (!ip6_scan(x,myipincoming))
     strerr_die3x(111,FATAL,"unable to parse IP address ",x);
 
-  udp53 = socket_udp();
+#if 0
+  /* if if IP is a mapped-IPv4 address, disable IPv6 functionality */
+  /* this is actually a bad idea */
+  if (ip6_isv4mapped(myipincoming))
+    noipv6 = 1;
+#endif
+
+  udp53 = socket_udp6();
   if (udp53 == -1)
     strerr_die2sys(111,FATAL,"unable to create UDP socket: ");
-  if (socket_bind4_reuse(udp53,myipincoming,53) == -1)
+  if (socket_bind6_reuse(udp53,myipincoming,53,interface) == -1)
     strerr_die2sys(111,FATAL,"unable to bind UDP socket: ");
 
-  tcp53 = socket_tcp();
+  tcp53 = socket_tcp6();
   if (tcp53 == -1)
     strerr_die2sys(111,FATAL,"unable to create TCP socket: ");
-  if (socket_bind4_reuse(tcp53,myipincoming,53) == -1)
+  if (socket_bind6_reuse(tcp53,myipincoming,53,interface) == -1)
     strerr_die2sys(111,FATAL,"unable to bind TCP socket: ");
 
   droproot(FATAL);
@@ -421,7 +439,7 @@ int main()
   x = env_get("IPSEND");
   if (!x)
     strerr_die2x(111,FATAL,"$IPSEND not set");
-  if (!ip4_scan(x,myipoutgoing))
+  if (!ip6_scan(x,myipoutgoing))
     strerr_die3x(111,FATAL,"unable to parse IP address ",x);
 
   x = env_get("CACHESIZE");
@@ -430,6 +448,20 @@ int main()
   scan_ulong(x,&cachesize);
   if (!cache_init(cachesize))
     strerr_die3x(111,FATAL,"not enough memory for cache of size ",x);
+
+  if (openreadclose("ignoreip",&sa,64) < 0) 
+    strerr_die2x(111,FATAL,"trouble reading ignoreip");
+  for(j = k = i = 0; i < sa.len; i++)
+    if (sa.s[i] == '\n')  {
+      sa.s[i] = '\0';
+      if (!stralloc_readyplus(&ignoreip,16))
+	strerr_die2x(111,FATAL,"out of memory parsing ignoreip");
+      if (!ip6_scan(sa.s+k,ignoreip.s+j))
+        strerr_die3x(111,FATAL,"unable to parse address in ignoreip ",ignoreip.s+k);
+      j += 16;
+      k = i + 1;
+    }
+  ignoreip.len = j;
 
   if (env_get("HIDETTL"))
     response_hidettl();

@@ -2,6 +2,7 @@
 #include "taia.h"
 #include "byte.h"
 #include "dns.h"
+#include "ip6.h"
 
 struct dns_transmit dns_resolve_tx = {0};
 
@@ -9,12 +10,12 @@ int dns_resolve(const char *q,const char qtype[2])
 {
   struct taia stamp;
   struct taia deadline;
-  char servers[64];
+  char servers[256];
   iopause_fd x[1];
   int r;
 
   if (dns_resolvconfip(servers) == -1) return -1;
-  if (dns_transmit_start(&dns_resolve_tx,servers,1,q,qtype,"\0\0\0\0") == -1) return -1;
+  if (dns_transmit_start(&dns_resolve_tx,servers,1,q,qtype,V6any) == -1) return -1;
 
   for (;;) {
     taia_now(&stamp);

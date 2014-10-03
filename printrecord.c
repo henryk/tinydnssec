@@ -4,6 +4,7 @@
 #include "byte.h"
 #include "dns.h"
 #include "printrecord.h"
+#include "ip6.h"
 
 static char *d;
 
@@ -81,6 +82,15 @@ unsigned int printrecord_cat(stralloc *out,const char *buf,unsigned int len,unsi
       if (i) if (!stralloc_cats(out,".")) return 0;
       if (!stralloc_catulong0(out,ch,0)) return 0;
     }
+  }
+  else if (byte_equal(misc,2,DNS_T_AAAA)) {
+    char ip6str[IP6_FMT];
+    int stringlen;
+    if (datalen != 16) { errno = error_proto; return 0; }
+    if (!stralloc_cats(out," AAAA ")) return 0;
+    pos = dns_packet_copy(buf,len,pos,misc,16); if (!pos) return 0;
+    stringlen=ip6_fmt(ip6str,misc);
+    if (!stralloc_catb(out,ip6str,stringlen)) return 0;
   }
   else {
     if (!stralloc_cats(out," ")) return 0;

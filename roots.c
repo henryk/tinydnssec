@@ -6,6 +6,7 @@
 #include "error.h"
 #include "direntry.h"
 #include "ip4.h"
+#include "ip6.h"
 #include "dns.h"
 #include "openreadclose.h"
 #include "roots.h"
@@ -22,7 +23,7 @@ static int roots_find(char *q)
     j = dns_domain_length(data.s + i);
     if (dns_domain_equal(data.s + i,q)) return i + j;
     i += j;
-    i += 64;
+    i += 256;
   }
   return -1;
 }
@@ -40,12 +41,12 @@ static int roots_search(char *q)
   }
 }
 
-int roots(char servers[64],char *q)
+int roots(char servers[256],char *q)
 {
   int r;
   r = roots_find(q);
   if (r == -1) return 0;
-  byte_copy(servers,64,data.s + r);
+  byte_copy(servers,256,data.s + r);
   return 1;
 }
 
@@ -60,7 +61,7 @@ static int init2(DIR *dir)
   const char *fqdn;
   static char *q;
   static stralloc text;
-  char servers[64];
+  char servers[256];
   int serverslen;
   int i;
   int j;
@@ -86,14 +87,14 @@ static int init2(DIR *dir)
       for (i = 0;i < text.len;++i)
 	if (text.s[i] == '\n') {
 	  if (serverslen <= 60)
-	    if (ip4_scan(text.s + j,servers + serverslen))
-	      serverslen += 4;
+	    if (ip6_scan(text.s + j,servers + serverslen))
+	      serverslen += 16;
 	  j = i + 1;
 	}
-      byte_zero(servers + serverslen,64 - serverslen);
+      byte_zero(servers + serverslen,256 - serverslen);
 
       if (!stralloc_catb(&data,q,dns_domain_length(q))) return 0;
-      if (!stralloc_catb(&data,servers,64)) return 0;
+      if (!stralloc_catb(&data,servers,256)) return 0;
     }
   }
 }

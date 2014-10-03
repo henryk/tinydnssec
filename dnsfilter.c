@@ -12,6 +12,7 @@
 #include "iopause.h"
 #include "error.h"
 #include "exit.h"
+#include "ip6.h"
 
 #define FATAL "dnsfilter: fatal: "
 
@@ -44,7 +45,7 @@ int flag0 = 1;
 iopause_fd *io;
 int iolen;
 
-char servers[64];
+char servers[256];
 char ip[4];
 char name[DNS_NAME4_DOMAIN];
 
@@ -191,7 +192,7 @@ int main(int argc,char **argv)
 	      dns_name4_domain(name,ip);
 	      if (dns_resolvconfip(servers) == -1)
 	        strerr_die2sys(111,FATAL,"unable to read /etc/resolv.conf: ");
-	      if (dns_transmit_start(&x[xnum].dt,servers,1,name,DNS_T_PTR,"\0\0\0\0") == -1)
+	      if (dns_transmit_start(&x[xnum].dt,servers,1,name,DNS_T_PTR,V6any) == -1)
 	        errout(xnum);
 	      else {
 	        x[xnum].flagactive = 1;

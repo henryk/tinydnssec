@@ -21,6 +21,8 @@
 #include "scan.h"
 #include "qlog.h"
 #include "response.h"
+#include "ip6.h"
+#include "clientloc.h"
 
 extern int respond(char *,char *,char *);
 
@@ -123,7 +125,7 @@ void get(char *buf,unsigned int len)
   }
 }
 
-char ip[4];
+char ip[16];
 unsigned long port;
 char clientloc[2];
 
@@ -231,21 +233,10 @@ void doaxfr(char id[2])
 
   axfrcheck(zone);
 
+  find_client_loc(clientloc, ip);
+
   tai_now(&now);
   cdb_init(&c,fdcdb);
-
-  byte_zero(clientloc,2);
-  key[0] = 0;
-  key[1] = '%';
-  byte_copy(key + 2,4,ip);
-  r = cdb_find(&c,key,6);
-  if (!r) r = cdb_find(&c,key,5);
-  if (!r) r = cdb_find(&c,key,4);
-  if (!r) r = cdb_find(&c,key,3);
-  if (!r) r = cdb_find(&c,key,2);
-  if (r == -1) die_cdbread();
-  if (r && (cdb_datalen(&c) == 2))
-    if (cdb_read(&c,clientloc,2,cdb_datapos(&c)) == -1) die_cdbread();
 
   cdb_findstart(&c);
   for (;;) {
@@ -328,10 +319,10 @@ int main()
   axfr = env_get("AXFR");
   
   x = env_get("TCPREMOTEIP");
-  if (x && ip4_scan(x,ip))
+  if (x && ip6_scan(x,ip))
     ;
   else
-    byte_zero(ip,4);
+    byte_zero(ip,16);
 
   x = env_get("TCPREMOTEPORT");
   if (!x) x = "0";

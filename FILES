@@ -135,6 +135,7 @@ error_str.c
 exit.h
 fmt.h
 fmt_ulong.c
+fmt_xlong.c
 gen_alloc.h
 gen_allocdefs.h
 getln.c
@@ -151,6 +152,9 @@ iopause.h2
 ip4.h
 ip4_fmt.c
 ip4_scan.c
+ip6.h
+ip6_fmt.c
+ip6_scan.c
 ndelay.h
 ndelay_off.c
 ndelay_on.c
@@ -164,6 +168,7 @@ prot.h
 readclose.c
 readclose.h
 scan.h
+scan_0x.c
 scan_ulong.c
 seek.h
 seek_set.c
@@ -241,3 +246,9 @@ uint64.h2
 warn-shsgr
 buffer_read.c
 buffer_write.c
+dns_nd6.c
+socket_udp6.c
+socket_getifidx.c
+tryn2i.c
+haven2i.h1
+haven2i.h2

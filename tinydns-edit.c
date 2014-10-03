@@ -13,6 +13,7 @@
 #include "str.h"
 #include "fmt.h"
 #include "ip4.h"
+#include "ip6.h"
 #include "dns.h"
 
 #define FATAL "tinydns-edit: fatal: "
@@ -25,7 +26,8 @@ char *fnnew;
 
 void die_usage()
 {
-  strerr_die1x(100,"tinydns-edit: usage: tinydns-edit data data.new add [ns|childns|host|alias|mx] domain a.b.c.d");
+  strerr_die1x(100,"tinydns-edit: usage: tinydns-edit data data.new add [ns|childns|host|alias|mx] domain a.b.c.d\n"
+                   "tinydns-edit: usage: tinydns-edit data data.new add [host6|alias6] domain a:b:c:d:e:f:g:h");
 }
 void nomem()
 {
@@ -43,6 +45,7 @@ void die_write()
 char mode;
 static char *target;
 char targetip[4];
+char targetip6[16];
 
 int fd;
 buffer b;
@@ -61,7 +64,9 @@ static stralloc f[NUMFIELDS];
 static char *d1;
 static char *d2;
 char ip[4];
+char ip6[16];
 char ipstr[IP4_FMT];
+char ip6str[IP6_FMT];
 char strnum[FMT_ULONG];
 
 static char *names[26];
@@ -96,7 +101,9 @@ int main(int argc,char **argv)
   if (str_equal(*argv,"ns")) mode = '.';
   else if (str_equal(*argv,"childns")) mode = '&';
   else if (str_equal(*argv,"host")) mode = '=';
+  else if (str_equal(*argv,"host6")) mode = '6';
   else if (str_equal(*argv,"alias")) mode = '+';
+  else if (str_equal(*argv,"alias6")) mode = '3';
   else if (str_equal(*argv,"mx")) mode = '@';
   else die_usage();
 
@@ -104,7 +111,11 @@ int main(int argc,char **argv)
   if (!dns_domain_fromdot(&target,*argv,str_len(*argv))) nomem();
 
   if (!*++argv) die_usage();
-  if (!ip4_scan(*argv,targetip)) die_usage();
+  if (mode == '6' || mode == '3') {
+    if (!ip6_scan(*argv,targetip6)) die_usage();
+  } else {
+    if (!ip4_scan(*argv,targetip)) die_usage();
+  }
 
   umask(077);
 
@@ -129,7 +140,7 @@ int main(int argc,char **argv)
 	if (!dns_domain_fromdot(&names[i],f[0].s,f[0].len)) nomem();
       }
       break;
-    case '+': case '=':
+    case '+': case '=': case '6': case '3':
       ttl = TTL_POSITIVE;
       break;
     case '@':
@@ -203,6 +214,18 @@ int main(int argc,char **argv)
 	}
 	break;
 
+      case '6':
+	if (line.s[0] == '6') {
+	  if (!dns_domain_fromdot(&d1,f[0].s,f[0].len)) nomem();
+	  if (dns_domain_equal(d1,target))
+	    strerr_die2x(100,FATAL,"host name already used");
+	  if (!stralloc_0(&f[1])) nomem();
+	  if (ip6_scan(f[1].s,ip6))
+	    if (byte_equal(ip,16,targetip6))
+	      strerr_die2x(100,FATAL,"IPv6 address already used");
+	}
+	break;
+
       case '@':
 	if (line.s[0] == '@') {
           if (!dns_domain_fromdot(&d1,f[0].s,f[0].len)) nomem();
@@ -228,7 +251,11 @@ int main(int argc,char **argv)
   if (!stralloc_copyb(&f[0],&mode,1)) nomem();
   if (!dns_domain_todot_cat(&f[0],target)) nomem();
   if (!stralloc_cats(&f[0],":")) nomem();
-  if (!stralloc_catb(&f[0],ipstr,ip4_fmt(ipstr,targetip))) nomem();
+  if (mode == '6' || mode == '3') {
+    if (!stralloc_catb(&f[0],ip6str,ip6_fmt_flat(ip6str,targetip6))) nomem();
+  } else {
+    if (!stralloc_catb(&f[0],ipstr,ip4_fmt(ipstr,targetip))) nomem();
+  }
   switch(mode) {
     case '.': case '&': case '@':
       for (i = 0;i < 26;++i)
