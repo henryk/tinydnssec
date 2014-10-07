@@ -92,7 +92,9 @@ A million repetitions of "a"
 #include "config.h"
 #endif
 
+#ifndef __FreeBSD__
 #include <endian.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 
